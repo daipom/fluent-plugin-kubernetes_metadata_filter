@@ -1,12 +1,6 @@
 name: Test
 on:
-  pull_request:
-    paths:
-      - '.github/workflows/test.yml'
-      - 'Gemfile*'
-      - 'Rakefile'
-      - 'fluent-plugin-kubernetes_metadata_filter.gemspec'
-      - '**/*.rb'
+  - push
 permissions:
   contents: read
 jobs:
@@ -31,10 +25,4 @@ jobs:
           ruby-version: ${{ matrix.ruby-version }}
           bundler-cache: true
       - name: Run tests
-        run: bundle exec rake test
-      - name: Upload coverage results
-        if: matrix.ruby-version == '2.7'
-        uses: actions/upload-artifact@v4
-        with:
-          name: coverage
-          path: coverage/
+        run: bundle exec rake test TESTOPTS="-v"

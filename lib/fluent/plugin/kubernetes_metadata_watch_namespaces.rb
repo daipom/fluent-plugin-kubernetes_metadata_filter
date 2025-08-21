@@ -27,6 +27,7 @@ module KubernetesMetadata
     include ::KubernetesMetadata::Common
 
     def set_up_namespace_thread # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity
+      p "set_up_namespace_thread"
       # Any failures / exceptions in the initial setup should raise
       # Fluent:ConfigError, so that users can inspect potential errors in
       # the configuration.
@@ -39,6 +40,7 @@ module KubernetesMetadata
       # exceptions could be caused by Kubernetes API being temporarily
       # down. We assume the configuration is correct at this point.
       loop do # rubocop:disable Metrics/BlockLength
+        p "loop"
         namespace_watcher ||= get_namespaces_and_start_watcher
         process_namespace_watcher_notices(namespace_watcher)
       rescue GoneError => e
@@ -111,6 +113,7 @@ module KubernetesMetadata
     end
 
     def start_namespace_watch
+      p "start_namespace_watch"
       get_namespaces_and_start_watcher
     rescue StandardError => e
       message = 'start_namespace_watch: Exception encountered setting up ' \
@@ -125,6 +128,7 @@ module KubernetesMetadata
     # List all namespaces, record the resourceVersion and return a watcher
     # starting from that resourceVersion.
     def get_namespaces_and_start_watcher # rubocop:disable Metrics/MethodLength, Naming/AccessorMethodName
+      p "get_namespaces_and_start_watcher"
       options = {
         resource_version: '0' # Fetch from API server cache instead of etcd quorum read
       }
@@ -152,6 +156,7 @@ module KubernetesMetadata
 
     # Process a watcher notice and potentially raise an exception.
     def process_namespace_watcher_notices(watcher) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+      p "process_namespace_watcher_notices"
       watcher.each do |notice| # rubocop:disable Metrics/BlockLength
         case notice[:type]
         when 'MODIFIED'

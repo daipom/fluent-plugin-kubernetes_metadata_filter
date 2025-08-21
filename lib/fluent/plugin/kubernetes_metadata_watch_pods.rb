@@ -27,6 +27,7 @@ module KubernetesMetadata
     include ::KubernetesMetadata::Common
 
     def set_up_pod_thread # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/PerceivedComplexity
+      p "set_up_pod_thread"
       # Any failures / exceptions in the initial setup should raise
       # Fluent:ConfigError, so that users can inspect potential errors in
       # the configuration.
@@ -40,6 +41,7 @@ module KubernetesMetadata
       # exceptions could be caused by Kubernetes API being temporarily
       # down. We assume the configuration is correct at this point.
       loop do # rubocop:disable Metrics/BlockLength
+        p "loop"
         pod_watcher ||= get_pods_and_start_watcher
         process_pod_watcher_notices(pod_watcher)
       rescue GoneError => e
@@ -112,6 +114,7 @@ module KubernetesMetadata
     end
 
     def start_pod_watch
+      p "start_pod_watch"
       get_pods_and_start_watcher
     rescue StandardError => e
       message = 'start_pod_watch: Exception encountered setting up pod watch ' \
@@ -126,6 +129,7 @@ module KubernetesMetadata
     # List all pods, record the resourceVersion and return a watcher starting
     # from that resourceVersion.
     def get_pods_and_start_watcher # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Naming/AccessorMethodName
+      p "get_pods_and_start_watcher"
       options = {
         resource_version: '0' # Fetch from API server cache instead of etcd quorum read
       }
@@ -158,6 +162,7 @@ module KubernetesMetadata
 
     # Process a watcher notice and potentially raise an exception.
     def process_pod_watcher_notices(watcher) # rubocop:disable Metrics/AbcSize, Metrics/CyclomaticComplexity, Metrics/MethodLength, Metrics/PerceivedComplexity
+      p "process_pod_watcher_notices"
       watcher.each do |notice| # rubocop:disable Metrics/BlockLength
         # store version we processed to not reprocess it ... do not unset when there is no version in response
         version = # TODO: replace with &.dig once we are on ruby 2.5+
